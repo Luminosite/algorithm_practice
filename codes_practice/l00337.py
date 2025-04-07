@@ -1,34 +1,44 @@
+# Definition for a binary tree node.
+class TreeNode(object):
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+
 class Solution(object):
-    def combinationSum4(self, nums, target):
+    def rob(self, root):
         """
-        :type nums: List[int]
-        :type target: int
+        :type root: Optional[TreeNode]
         :rtype: int
         """
-        status = [0]*(target+1)
-        status[0] = 1
 
-        # this is solution for finding charge.
-        # when travel on statue, charge's order is fixed, and is same as order in nums
-        # in this way, we got combination number
-        # for example, nums is [1,2] and target=4, it only generates 1,1,2. but never 1,2,1 or 2,1,1
-        # for i in nums:
-        #     for j in range(i, target+1):
-        #         status[j] += status[j-i]
-        # return status[-1]
+        def travel(r: TreeNode):
+            if not r.left and not r.right:
+                return r.val, 0
+            sub1 = 0
+            sub2 = 0
+            if r.left:
+                ret1, ret2 = travel(r.left)
+                sub1 += ret1
+                sub2 += ret2
+            if r.right:
+                ret1, ret2 = travel(r.right)
+                sub1 += ret1
+                sub2 += ret2
+            cur = max(sub1, r.val+sub2)
+            return cur, sub1
 
-        # in 377, to consider all different sequences
-        # travel nums in the travel of status.
-        for j in range(1, target+1):
-            for i in nums:
-                if i <= j:
-                    status[j] += status[j-i]
-        return status[-1]
+        return travel(root)[0]
 
 
 s = Solution()
-print(s.combinationSum4(
-    [1,2,3],
-    4
-))
 
+n = TreeNode(3,
+             TreeNode(4,
+                      TreeNode(1), TreeNode(3)),
+             TreeNode(5,
+                      None, TreeNode(1))
+             )
+
+print(s.rob(n))
